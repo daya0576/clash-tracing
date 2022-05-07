@@ -3,16 +3,20 @@ services:
   loki:
     image: grafana/loki:2.4.2
     container_name: loki
+    user: '1100'
+    ports:
+      - "3100:3100" ##将loki的端口暴露出来，可以用现有的Grafana访问
     volumes:
       - ./loki/data:/loki
       - ./loki/config.yaml:/etc/loki/local-config.yaml
-  grafana:
-    image: grafana/grafana-oss:latest
-    volumes:
-      - ./grafana:/var/lib/grafana
-    ports:
-      - "3000:3000"
-    container_name: grafana
+#  grafana:
+#    image: grafana/grafana-oss:latest
+#    user: '0'
+#    volumes:
+#      - ./grafana:/var/lib/grafana
+#    ports:
+#      - "3001:3000"
+#    container_name: grafana_OSS
   vector:
     image: timberio/vector:0.X-alpine
     volumes:
@@ -23,9 +27,9 @@ services:
   reporter:
     build: .
     environment:
-      CLASH_HOST: '192.168.88.201:9090'
-      CLASH_TOKEN: ''
-      VECTOR_ADDR: 'vector:9000'
+      CLASH_HOST: '10.200.1.94:9000'
+      CLASH_TOKEN: '123456'
+      VECTOR_ADDR: 'vector:9001' ##对应vector.toml配置端口
     container_name: reporter
     depends_on:
       - vector
